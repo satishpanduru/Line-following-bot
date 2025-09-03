@@ -1,0 +1,132 @@
+/* Defining motor control pins */
+#define enA 6//Enable1 L298 Pin enA 
+#define in1 2 //Motor1  L298 Pin in1 (Left Motor Backward)
+#define in2 5 //Motor1  L298 Pin in2 (Left Motor Forward)
+#define in3 4 //Motor2  L298 Pin in3 (Right Motor Forward)
+#define in4 3 //Motor2  L298 Pin in4 (Right Motor Backward)
+#define enB 10 //Enable2 L298 Pin enB 
+
+
+#define L_S A0 //ir sensor Left
+#define R_S A1 //ir sensor Right
+
+void setup() {
+Serial.begin(9600); // start serial communication at 9600bps
+pinMode(enA, OUTPUT); // declare as output for L298 Pin enA 
+pinMode(in1, OUTPUT); // declare as output for L298 Pin in1 
+pinMode(in2, OUTPUT); // declare as output for L298 Pin in2 
+pinMode(in3, OUTPUT); // declare as output for L298 Pin in3   
+pinMode(in4, OUTPUT); // declare as output for L298 Pin in4 
+pinMode(enB, OUTPUT); // declare as output for L298 Pin enB 
+
+analogWrite(enA, 100); // Write The Duty Cycle 0 to 255 Enable Pin A for Motor1 Speed 
+analogWrite(enB, 100); // Write The Duty Cycle 0 to 255 Enable Pin B for Motor2 Speed 
+
+  
+pinMode(R_S, INPUT); // declare if sensor as input  
+pinMode(L_S, INPUT); // declare ir sensor as input
+
+  
+}
+
+void loop() {
+  if((digitalRead(R_S) == 0)&&(digitalRead(L_S) == 0))
+  {
+    forward() ;
+    delay(100);
+  }
+                    
+   
+ 
+//if Right Sensor is Black and Left Sensor is White then it will call turn Right function
+  else if((digitalRead(R_S) == 0)&&(digitalRead(L_S) == 1))
+  {
+    turnRight(); 
+    delay(100);
+  }  
+
+//if Right Sensor is White and Left Sensor is Black then it will call turn Left function
+  else if((digitalRead(R_S) == 1)&&(digitalRead(L_S) == 0))
+  {
+    turnLeft(); 
+    delay(100);
+  } 
+
+  else if((digitalRead(R_S) == 1)&&(digitalRead(L_S) == 1))
+  {
+    Stop();
+    delay(100);
+  } 
+    
+  delay(10);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*********************************************** MOTOR FUNCTIONS ***********************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//------------------------------------------------------------------------------------------------------------//
+//        Input 1     |        Input 2       |                                       Spinning Direction       //
+//-----------------------------------------------------------------------------------------------------------//
+//        LOW (0)     |        LOW (0)       |                                       Motor OFF               //
+//        HIGH (1)    |        LOW (0)       |                                       Forward                 //
+//        LOW (0)     |        HIGH (1)      |                                       Backward                //
+//        HIGH (1)    |        HIGH (1)      |                                       Motor OFF               //
+//-----------------------------------------------------------------------------------------------------------//
+
+
+/*************************************************** FORWARD ***************************************************/
+
+void turnLeft(){  
+// Left motor backward rotation
+digitalWrite(in1, LOW);  
+digitalWrite(in2, HIGH); 
+// Right motor forward rotation
+digitalWrite(in3, HIGH); 
+digitalWrite(in4, LOW);
+return;
+}
+
+/*************************************************** BACKWARD **************************************************/
+void turnRight(){ 
+// Left motor forward rotation
+digitalWrite(in1, HIGH); 
+digitalWrite(in2, LOW);
+// Right motor backward rotation
+digitalWrite(in3, LOW);
+digitalWrite(in4, HIGH);
+}
+
+/************************************************** TURN RIGHT **************************************************/
+void backward(){
+// Left motor backward rotation 
+digitalWrite(in1, LOW);
+digitalWrite(in2, HIGH);
+// Right motor backward rotation
+digitalWrite(in3, LOW);
+digitalWrite(in4, HIGH);
+return; 
+}
+
+/************************************************** TURN LEFT *************************************************/
+void forward(){ 
+// Left motor forward rotation 
+digitalWrite(in1, HIGH);
+digitalWrite(in2, LOW);
+// Right motor forward rotation 
+digitalWrite(in3, HIGH); 
+digitalWrite(in4, LOW); 
+return;
+}
+
+/**************************************************** STOP *****************************************************/
+void Stop(){ 
+// Left motor OFF
+digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+// Right motor OFF
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+return;
+}
